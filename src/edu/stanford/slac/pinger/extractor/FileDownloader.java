@@ -18,20 +18,27 @@ public class FileDownloader {
 		
 		try{
 			
-			ftpClient.connect("ftp.slac.stanford.edu");
-			ftpClient.login("anonymous", "anonymous@domain.com");
-			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			ftpClient.enterLocalPassiveMode();
-			FileOutputStream fos = new FileOutputStream(downloadPath+"/"+metric+".tar");
-			ftpClient.retrieveFile("/users/cottrell/"+metric+"-"+packetSize+"-by-"+granularity+".tar", fos);
-		
+			boolean success = false;
+			
+			do{
+				
+				ftpClient.connect("ftp.slac.stanford.edu");
+				ftpClient.login("anonymous", "anonymous@domain.com");
+				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+				ftpClient.enterLocalPassiveMode();
+				FileOutputStream fos = new FileOutputStream(downloadPath+"/"+metric+".tar");
+				success = ftpClient.retrieveFile("/users/cottrell/"+metric+"-"+packetSize+"-by-"+granularity+".tar", fos);
+				fos.close();
+				ftpClient.logout();
+				ftpClient.disconnect();
+				
+			}while(!success);
+			
 			extractDailyFile(metric, packetSize, granularity, year, month, day);
-           
 			
 		}catch(IOException ex){	
-			System.out.println("Fail to download the file from the FTP");
+			System.out.println("Fail to download the "+metric+" file from the FTP");
 		}
-		
 	}
 	
 		

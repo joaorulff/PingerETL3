@@ -1,15 +1,18 @@
 package edu.stanford.slac.pinger.extractor;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.stanford.slac.pinger.XML.XMLModelCreator;
 
-public class Starter {
+public class DownloadStarter {
 	
 	
 	
@@ -41,17 +44,25 @@ public class Starter {
 	
 	public static void start(Date date) throws IOException, InterruptedException, JSONException{
 				
-		FileDownloader.deleteMetricFiles();		
+		FileDownloader.deleteMetricFiles();	
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar calendar = new GregorianCalendar();
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		
+		String year = String.valueOf(dateFormat.format(calendar.getTime())).substring(0,4);
+		String month = String.valueOf(dateFormat.format(calendar.getTime())).substring(5,7);
+		String day = String.valueOf(dateFormat.format(calendar.getTime())).substring(8,10);
+		
+		//System.out.println(year+"-"+month+"-"+day);
 		
 		for (String metric : metrics) {
 			
 			for (String size : packet_size) {
 				
-				FileDownloader.download(metric, size, "node", "2016", "06", "28");
+				FileDownloader.download(metric, size, "node", year, month, day);
 				
 			}	
 		}
-		
-		
 	}
 }
